@@ -1,5 +1,9 @@
 import Hero from "@/components/hero";
-
+import Container from "@/components/containere";
 export default function Blog() {
-  return <Hero title="blog" subtitle="Recent Posts" />;
+  return (
+    <Container>
+      <Hero title="blog" subtitle="Recent Posts" />
+    </Container>
+  );
 }
