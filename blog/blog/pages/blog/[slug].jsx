@@ -41,6 +41,7 @@ export default function Post({
         <PostHeader title={title} subtitle="blog Article" publish={publish} />
         <figure>
           <Image
+            key={eyecatch.url}
             src={eyecatch.url}
             alt=""
             layout="responsive"
@@ -79,33 +80,37 @@ export default function Post({
   );
 }
 export async function getStaticPaths() {
-  const allSlugs = await getAllSlugs();
+  const allSlugs = await getAllSlugs(5);
   return {
     // paths: ["/blog/schedule", "/blog/music", "/blog/micro"],
     paths: allSlugs.map(({ slug }) => `/blog/${slug}`),
-    fallback: false,
+    fallback: "blocking",
   };
 }
 
 export async function getStaticProps(context) {
   const slug = context.params.slug;
   const post = await getPostBySlug(slug);
-  const description = extractText(post.content);
-  const eyecatch = post.eyecatch ?? eyecatchLocal;
-  const { base64 } = await getPlaiceholder(eyecatch.url);
-  eyecatch.blurDataURL = base64;
-  const allSlugs = await getAllSlugs();
-  const [prevPost, nextPost] = prevNextPost(allSlugs, slug);
-  return {
-    props: {
-      title: post.title,
-      publish: post.publishDate,
-      content: post.content,
-      eyecatch: eyecatch,
-      categories: post.categories,
-      description: description,
-      prevPost: prevPost,
-      nextPost: nextPost,
-    },
-  };
+  if (!post) {
+    return { notFound: true };
+  } else {
+    const description = extractText(post.content);
+    const eyecatch = post.eyecatch ?? eyecatchLocal;
+    const { base64 } = await getPlaiceholder(eyecatch.url);
+    eyecatch.blurDataURL = base64;
+    const allSlugs = await getAllSlugs();
+    const [prevPost, nextPost] = prevNextPost(allSlugs, slug);
+    return {
+      props: {
+        title: post.title,
+        publish: post.publishDate,
+        content: post.content,
+        eyecatch: eyecatch,
+        categories: post.categories,
+        description: description,
+        prevPost: prevPost,
+        nextPost: nextPost,
+      },
+    };
+  }
 }

@@ -6,7 +6,7 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 
-export default function Pgination({
+export default function Pagination({
   prevText = "",
   prevUrl = "",
   nextText = "",
